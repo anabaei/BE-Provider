@@ -29,13 +29,16 @@ func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Req
 
 func (app *application) getUpdateDeleteBooksHandler(w http.ResponseWriter, r *http.Request) {
 	
-	switch r.method {
+	switch r.Method {
 	case http.MethodPut:
-		app.updateBook(w, r)
+		fmt.Fprintln(w, "updte a book")
+		//app.updateBook(w, r)
 	case http.MethodGet:
-		app.getBook(w, r)
+		fmt.Fprintln(w, "GET a book")
+		//app.getBook(w, r)
 	case http.MethodDelete: 
-	   app.deleteBook(w, r)
+	fmt.Fprintln(w, "Delete a book")
+	  //app.deleteBook(w, r)
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 	}
