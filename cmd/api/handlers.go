@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	 "strconv"
 )
 
 func (app *application) healthcheck(w http.ResponseWriter, r *http.Request){
@@ -31,17 +32,47 @@ func (app *application) getUpdateDeleteBooksHandler(w http.ResponseWriter, r *ht
 	
 	switch r.Method {
 	case http.MethodPut:
-		fmt.Fprintln(w, "updte a book")
-		//app.updateBook(w, r)
+		fmt.Fprintln(w, "update a book")
+		app.updateBook(w, r)
 	case http.MethodGet:
 		fmt.Fprintln(w, "GET a book")
-		//app.getBook(w, r)
+		app.getBook(w, r)
 	case http.MethodDelete: 
 	fmt.Fprintln(w, "Delete a book")
-	  //app.deleteBook(w, r)
+	  app.deleteBook(w, r)
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 	}
 
 
+}
+
+func (app *application) getBook(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/v1/books/"):]
+	idInt, err := strconv.ParseInt(string(id), 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid book ID: " + err.Error(), http.StatusBadRequest)
+		return
+	}
+	fmt.Fprintf(w, "GET book with ID %d\n", idInt)
+}
+
+func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/v1/books/"):]
+	idInt, err := strconv.ParseInt(string(id), 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid book ID: " + err.Error(), http.StatusBadRequest)
+		return
+	}
+	fmt.Fprintf(w, "update book with ID %d\n", idInt)
+}
+
+func (app *application) deleteBook(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/v1/books/"):]
+	idInt, err := strconv.ParseInt(string(id), 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid book ID: " + err.Error(), http.StatusBadRequest)
+		return
+	}
+	fmt.Fprintf(w, "delete book with ID %d\n", idInt)
 }
