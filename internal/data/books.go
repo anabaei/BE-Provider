@@ -1,19 +1,16 @@
-package data 
-
+package data
 
 import (
 	"time"
 )
 
 type Book struct {
-	ID int64,
-	CreatedAt time.Time,
-	Title string,
-	Published int,
-	Author string,
-	Pages int,
-    Genres []string,
-	Rating float32,
-	Version int32
+    ID        int64     `json:"id"`
+    Title     string    `json:"-"`
+    CreatedAt time.Time `json:"created_at, omitempty"`
+    Published time.Time `json:"published"`
+    Pages     int       `json:"pages"`
+    Genres    []string  `json:"genres"`
+    Rating    float64   `json:"rating"`
+    Version   int       `json:"version"`
 }
-

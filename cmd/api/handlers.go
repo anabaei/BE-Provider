@@ -3,8 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
-	"readinglist.duffney.io/internal/data"
+	"provider-api/internal/data"
 	"strconv"
 	"time"
 )
@@ -37,8 +38,30 @@ func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 	if r.Method == http.MethodPost {
-		fmt.Fprintln(w, "Post a new book to the list")
-		return
+		fmt.Fprintf(w, "-----\n")
+		// The pieces we need to extract from the request body.
+		var input struct {
+			Title     string    `json:"title"`
+			Published int `json:"published"`
+			Pages     int       `json:"pages"`
+			Genres    []string  `json:"genres"`
+			Rating    float64   `json:"rating"`
+		}
+		// Read Body
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		
+		// &input is a pointer to the input struct
+		err = json.Unmarshal(body, &input)
+		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+		fmt.Fprintf(w, " %v\n", input)
+
 	}
 }
 
@@ -72,26 +95,27 @@ func (app *application) getBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	book := data.Book{
-
 		ID:        idInt,
 		Title:     "The Great Gatsby",
 		CreatedAt: time.Now(),
-		Published: time.Date(2015, 4, 10, 0, 0, 0, 0, time.UTC),
+		Published: time.Now(),
 		Pages:     218,
 		Genres:    []string{"Fiction", "Tragedy"},
 		Rating:    4.5,
 		Version:   1,
 	}
 
-	js, err := json.Marshal(book)
-	if err != nil {
+	erro := app.writeJSON(w, http.StatusOK, envelope{"book": book})
+
+	// js, err := json.MarshalIndent(book, "", "\t")
+	if erro != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
-	return
+	// w.Header().Set("Content-Type", "application/json")
+	// w.Write(js)
+	// return
 }
 
 func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {
