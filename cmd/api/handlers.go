@@ -126,6 +126,25 @@ func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid book ID: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+	// we use pointer to update the existing ones
+	var input struct {
+		Title     *string    `json:"title"`
+		Published *int `json:"published"`
+		Pages     *int       `json:"pages"`
+		Genres    *[]string  `json:"genres"`
+		Rating    *float64   `json:"rating"`
+	}
+	book := data.Book{
+		ID:        idInt,
+		Title:     "The Great Gatsby",
+		CreatedAt: time.Now(),
+		Published: time.Now(),
+		Pages:     218,
+		Genres:    []string{"Fiction", "Tragedy"},
+		Rating:    4.5,
+		Version:   1,
+	}
+
 	fmt.Fprintf(w, "update book with ID %d\n", idInt)
 }
 
