@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"provider-api/internal/data"
 	"strconv"
@@ -33,6 +32,7 @@ func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "----->\n", r.Method)
 	if r.Method == http.MethodGet {
 		fmt.Fprintln(w, "Display a list of books on reading list")
 		return
@@ -41,25 +41,28 @@ func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Req
 		fmt.Fprintf(w, "-----\n")
 		// The pieces we need to extract from the request body.
 		var input struct {
-			Title     string    `json:"title"`
-			Published int `json:"published"`
-			Pages     int       `json:"pages"`
-			Genres    []string  `json:"genres"`
-			Rating    float64   `json:"rating"`
+			Title     string   `json:"title"`
+			Published int      `json:"published"`
+			Pages     int      `json:"pages"`
+			Genres    []string `json:"genres"`
+			Rating    float64  `json:"rating"`
 		}
 		// Read Body
-		body, err := ioutil.ReadAll(r.Body)
+		// body, err := ioutil.ReadAll(r.Body)
+		err := app.readJSON(w, r, &input)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 		
+
+
 		// &input is a pointer to the input struct
-		err = json.Unmarshal(body, &input)
-		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
-			return
-		}
+		// err = json.Unmarshal(body, &input)
+		// if err != nil {
+		// 	http.Error(w, "Bad Request", http.StatusBadRequest)
+		// 	return
+		// }
 		fmt.Fprintf(w, " %v\n", input)
 
 	}
@@ -128,11 +131,11 @@ func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {
 	}
 	// we use pointer to update the existing ones
 	var input struct {
-		Title     *string    `json:"title"`
-		Published *int `json:"published"`
-		Pages     *int       `json:"pages"`
-		Genres    *[]string  `json:"genres"`
-		Rating    *float64   `json:"rating"`
+		Title     *string   `json:"title"`
+		Published *int      `json:"published"`
+		Pages     *int      `json:"pages"`
+		Genres    *[]string `json:"genres"`
+		Rating    *float64  `json:"rating"`
 	}
 	book := data.Book{
 		ID:        idInt,
@@ -144,8 +147,38 @@ func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {
 		Rating:    4.5,
 		Version:   1,
 	}
+	err = app.readJSON(w, r, &input)
 
-	fmt.Fprintf(w, "update book with ID %d\n", idInt)
+	// body, err := ioutil.ReadAll(r.Body)
+
+	// if err != nil {
+	// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	// 	return
+	// }
+	// //read request body and unmarshal to put it into input
+	// err = json.Unmarshal(body, &input)
+	if err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	if input.Title != nil {
+		book.Title = *input.Title
+	}
+	if input.Published != nil {
+		book.Published = time.Now()
+	}
+	if input.Pages != nil {
+		book.Pages = *input.Pages
+	}
+	if len(*input.Genres) > 0 {
+		book.Genres = *input.Genres
+	}
+
+	if input.Rating != nil {
+		book.Rating = *input.Rating
+	}
+
+	fmt.Fprintf(w, "%v\n", book)
 }
 
 func (app *application) postBook(w http.ResponseWriter, r *http.Request) {
