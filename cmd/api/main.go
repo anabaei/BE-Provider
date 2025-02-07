@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 	"os"
+	"database/sql"
+	"github.com/lib/pq"
 )
 
 type config struct {
