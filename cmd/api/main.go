@@ -29,7 +29,8 @@ func main() {
 
 	flag.IntVar(&cfg.port, "port", 4001, "API server port")
 	flag.StringVar(&cfg.env, "env", "dev", "Environment (dev, test, prod)")
-    flag.Parse()
+    flag.StringVar(&cfg.dsn, os.GetEnv("Readme"))
+	flag.Parse()
 
     logger := log.New(os.Stdout, "", log.Ldate | log.Ltime)
 	app := &application{
