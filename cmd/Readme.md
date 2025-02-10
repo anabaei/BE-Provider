@@ -12,4 +12,14 @@ curl -X PUT -d "$Book" http://localhost:4001/v1/books/78
 ```
 
 
- ### 
+ ### Local DB 
+ * Connect to postgresql, using a dependency
+ ```
+ go get github.com/lib/pq"
+ // added to go.mod
+ ```
+ * Define variable config
+ ```
+ export READINGLIST_DB_DSN="postgres://readinglist:password@localhost/readinglist?sslmode=disable"
+ ```
+ 
