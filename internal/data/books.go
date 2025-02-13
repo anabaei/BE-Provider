@@ -3,6 +3,7 @@ package data
 import (
     "database/sql"
 	"time"
+    "errors"
     "github.com/lib/pq"
 )
 
@@ -18,6 +19,7 @@ type Book struct {
 }
 
 type BookModel struct{
+    // * pointer to sql database connection
     DB *sql.DB
 }
 
