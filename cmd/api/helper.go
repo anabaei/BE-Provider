@@ -10,7 +10,7 @@ import (
 
 type envelope map[string]any
 
-func (app *application) writeJSON(w http.ResponseWriter, status int, data any) error {
+func (app *application) writeJSON(w, http.ResponseWriter, status init, data envelope, headers http.Header) error {
     js, err := json.MarshalIndent(data, "", "\t")
     if err != nil {
         return err

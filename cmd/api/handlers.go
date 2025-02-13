@@ -7,6 +7,7 @@ import (
 	"provider-api/internal/data"
 	"strconv"
 	"time"
+	"BE-PROVIDER/internal/data"
 )
 
 func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +35,14 @@ func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
 func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "----->\n", r.Method)
 	if r.Method == http.MethodGet {
+		books, err := app.models.Books.GetAll()
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		
 		fmt.Fprintln(w, "Display a list of books on reading list")
+		
 		return
 	}
 	if r.Method == http.MethodPost {
